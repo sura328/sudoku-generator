@@ -5,40 +5,60 @@ import java.util.*;
 public class SudokuGenerator {
     
     private static final int SIZE = 9;
-    public int[][] board;
+    private int[][] solutionBoard;
+    private int[][] puzzleBoard;
+    private int[][] playerBoard;
 
     public SudokuGenerator() {
-        board = new int[SIZE][SIZE];
+        solutionBoard = new int[SIZE][SIZE];
+        puzzleBoard = new int[SIZE][SIZE];
+        playerBoard = new int[SIZE][SIZE];
     }
 
+    /**
+     * Getters
+     */
+    public int[][] getSolutionBoard() {
+        return solutionBoard;
+    }
+
+    public int[][] getPuzzleBoard() {
+        return puzzleBoard;
+    }
+
+    public int[][] getPlayerBoard() {
+        return playerBoard;
+    }
+
+
     // check if putting num in position [row, col] is legal
-    public boolean isValid(int row, int col, int num) {
-        //check row
-        for(int c = 0; c < SIZE; c++) {
-            if(board[row][c] == num) {
+    public boolean isValid(int[][] board, int row, int col, int num) {
+        // Check row
+        for (int c = 0; c < SIZE; c++) {
+            if (board[row][c] == num) {
                 return false;
             }
         }
 
-        //check column
-        for(int r = 0; r < SIZE; r++) {
-            if(board[r][col] == num) {
+        // Check column
+        for (int r = 0; r < SIZE; r++) {
+            if (board[r][col] == num) {
                 return false;
             }
         }
 
-        //check 3x3
-        //use mod 3 to find beginning of nearest 3x3 box
+        // Check 3x3 box
         int boxRow = row - row % 3;
         int boxCol = col - col % 3;
 
-        for(int r = boxRow; r < boxRow + 3; r++) {
-            for(int c = boxCol; c < boxCol + 3; c++) {
-                if(board[r][c] == num) return false;
+        for (int r = boxRow; r < boxRow + 3; r++) {
+            for (int c = boxCol; c < boxCol + 3; c++) {
+                if (board[r][c] == num) {
+                    return false;
+                }
             }
         }
 
-        //valid placement
         return true;
     }
 
@@ -63,23 +83,23 @@ public class SudokuGenerator {
      * cells and fill them to create a valid puzzle
      */
     public boolean fillBoard() {
-        for(int row = 0; row < SIZE; row++) {
 
-            for(int col = 0; col < SIZE; col++) {
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
 
-                if(board[row][col] == 0) {
+                if (solutionBoard[row][col] == 0) {
 
-                
-                    for(int num : shuffledNumbers()) {
+                    for (int num : shuffledNumbers()) {
 
-                        if(isValid(row, col, num)) {
-                            board[row][col] = num;
+                        if (isValid(solutionBoard, row, col, num)) {
 
-                            if(fillBoard()) {
+                            solutionBoard[row][col] = num;
+
+                            if (fillBoard()) {
                                 return true;
                             }
 
-                            board[row][col] = 0;
+                            solutionBoard[row][col] = 0;
                         }
                     }
 
@@ -87,11 +107,17 @@ public class SudokuGenerator {
                 }
             }
         }
-        
+
         return true;
     }
 
-    public void printBoard() {
+    private void copyBoard(int[][] source, int[][] destination) {
+        for(int row = 0; row < SIZE; row++) {
+            System.arraycopy(source[row], 0, destination[row], 0, SIZE);
+        }
+    }
+
+    public void printBoard(int[][] board) {
         for(int row = 0; row < SIZE; row++) {
 
             if(row % 3 == 0 && row != 0) {

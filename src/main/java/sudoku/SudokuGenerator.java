@@ -117,6 +117,24 @@ public class SudokuGenerator {
         }
     }
 
+    public void createPuzzle(int cellsToRemove) {
+        copyBoard(solutionBoard, puzzleBoard);
+
+        Random random = new Random();
+
+        int removed = 0;
+
+        while (removed < cellsToRemove) {
+            int row = random.nextInt(SIZE);
+            int col = random.nextInt(SIZE);
+
+            if(puzzleBoard[row][col] != 0) {
+                puzzleBoard[row][col] = 0;
+                removed++;
+            }
+        }
+    }
+
     public void printBoard(int[][] board) {
         for(int row = 0; row < SIZE; row++) {
 
